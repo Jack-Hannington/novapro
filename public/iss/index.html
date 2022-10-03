@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Data fetching</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.8.0/dist/leaflet.css"
+    integrity="sha512-hoalWLoI8r4UszCkZ5kL8vayOGVae1oxXe/2A4AO6J9+580uKHDO3JdHb7NzwwzK5xr/Fs0W40kiNHxM9vyTtQ=="
+    crossorigin=""/>
+     <!-- Make sure you put this AFTER Leaflet's CSS -->
+ <script src="https://unpkg.com/leaflet@1.8.0/dist/leaflet.js"
+ integrity="sha512-BB3hKbKWOc9Ez/TAwyWxNXeoV9c1v6FIeYiBieIWkpLjauysF18NzgR1MBNBXf8/KABdlkX68nAhlwcDFLGPCQ=="
+ crossorigin=""></script>
+    <style>
+
+#issMap {
+        height: 180px;
+      }
+    </style>
+</head>
+<body>
+
+    <h1>Data fetching 2</h1>
+
+    <table>
+      <tr><td>Latitude: <span id="lat"></span>°</td></tr>
+      <tr><td>Longitude: <span id="lon"></span>°</td></tr>
+      </table>
+
+    <div id="issMap"></div>
+
+    <script >
+          // Making a map and tiles
+          const mymap = L.map('issMap').setView([0, 0], 1);
+      const attribution =
+          '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors';
+      
+      const tileUrl = 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
+      const tiles = L.tileLayer(tileUrl, {
+          attribution
+      });
+      tiles.addTo(mymap);
+      
+      var latlngs = [];
+      
+      // Making a marker with a custom icon
+      const issIcon = L.icon({
+          iconUrl: 'https://i.postimg.cc/vZht82rF/ISS-spacecraft-model-1.png',
+          iconSize: [50, 32],
+          iconAnchor: [25, 16]
+      });
+      const marker = L.marker([0, 0], {
+          icon: issIcon
+      }).addTo(mymap);
+      
+      const api_url = 'https://api.wheretheiss.at/v1/satellites/25544';
+      
+      async function getISS() {
+          const response = await fetch(api_url);
+          const data = await response.json();
+          const {
+              latitude,
+              longitude
+          } = data;
+      
+          marker.setLatLng([latitude, longitude]);
+          document.getElementById('lat').textContent = latitude.toFixed(2);
+          document.getElementById('lon').textContent = longitude.toFixed(2);
+          console.log(data)
+      
+      
+          incomingCoords = [];
+          incomingCoords.push(latitude, longitude);
+          latlngs.push(incomingCoords);
+          console.log(latlngs);
+      
+          // create a red polyline from an array of LatLng points
+      
+          var polyline = L.polyline(latlngs, {
+              color: 'red'
+          }).addTo(mymap);
+      
+      
+          // zoom the map to the polyline
+          mymap.fitBounds(polyline.getBounds());
+      
+      }
+      
+      
+      
+      setInterval(getISS, 1000);
+      
+      
+      </script>
+
+
+
+
+
+<script>
+
+
+    // const api_url = 'https://www.incustrials.co.uk/getData.php'; 
+        
+    // async function fetchData() {
+    //     let response = await fetch(api_url);
+    //     let data = await response.json();
+    //     console.log(data.data.locations)
+    
+    
+    //     let firstDeviceId =  data.data.locations['af0325abb078f46'];
+    //     let latestPosition = firstDeviceId[ Object.keys(firstDeviceId).pop()];
+    //     console.log(latestPosition)
+    
+    
+    //     let table = document.getElementById('myTable');
+    
+    
+    //     // Append new table row for every device ID received.
+    //     for (device in data.data.locations ){
+    //         if (device != "mockServer"){
+    //           console.log(device);
+    //           let p = document.createElement('tr')
+    //           p.textContent = device;
+    //           table.append(p);
+    //         }
+    //     }
+    // }
+     
+    //    setInterval(fetchData,1000);
+    
+    </script>
+    
+</body>
+</html>
