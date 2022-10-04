@@ -1,57 +1,54 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Data fetching</title>
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.8.0/dist/leaflet.css"
-    integrity="sha512-hoalWLoI8r4UszCkZ5kL8vayOGVae1oxXe/2A4AO6J9+580uKHDO3JdHb7NzwwzK5xr/Fs0W40kiNHxM9vyTtQ=="
-    crossorigin=""/>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;700&family=Montserrat:wght@300;400;500;600;700;900&display=swap" rel="stylesheet">
-     <!-- Make sure you put this AFTER Leaflet's CSS -->
- <script src="https://unpkg.com/leaflet@1.8.0/dist/leaflet.js"
- integrity="sha512-BB3hKbKWOc9Ez/TAwyWxNXeoV9c1v6FIeYiBieIWkpLjauysF18NzgR1MBNBXf8/KABdlkX68nAhlwcDFLGPCQ=="
- crossorigin=""></script>
-    <style>
-
-        body {
-            font-family: Inter;
-        }
-
-#novaMap {
-        height: 480px;
-      }
-
-      table {
-        border:1px solid grey;
-      }
-      body {
-        max-width:1200px;
-        margin:auto;
-    }
-    </style>
- 
-</head>
+<sergey-import src="header" />
 <body>
 
-    <h1>Data fetching</h1>
-    <h3>Data refreshes every 500ms</h3>
+    <main class="container">
 
-    <table>
-      <tr><td>Device 1 Latitude: <span id="lat"></span>°</td></tr>
-      <tr><td>Device 1 Longitude: <span id="lon"></span>°</td></tr>
-      <tr><td>Device 2 Latitude: <span id="lat2"></span>°</td></tr>
-      <tr><td>Device 2 Longitude: <span id="lon2"></span>°</td></tr>
+        <h1>NOVA PRO</h1>
+
+
+    <table class="race-leaderboard">
+        <thead>
+            <tr>
+                <th><span class="iconify" data-icon="carbon:user-avatar"></span> User </th>
+                <th>Lat</th>
+                <th>Long</th>
+                <th>Pace 
+                    <select>
+                        <option>Swim</option>
+                        <option>Bike</option>
+                        <option>Run</option>
+                    </select>
+                </th>
+                <th>Heart rate</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><input type="color" value="#FF2D00" style="margin-right:10px;">Device 1 </td>
+                <td><span id="lat"></span>°</td>
+                <td><span id="lon"></span>°</td>
+                <td>...</td>
+                <td>...</td>
+            </tr>
+            <tr>
+                <td><input type="color" value="#0BFF00" style="margin-right:10px;">Device 2</td>
+                <td><span id="lat2"></span>°</td>
+                <td><span id="lon2"></span>°</td>
+                <td>...</td>
+                <td>...</td>
+              </tr>
+        </tbody>
       </table>
 
-    <div id="novaMap"></div>
+    <div id="map"></div>
+
+    </main>
+
+    
 
     <script >
           // Making a map and tiles
-          const mymap = L.map('novaMap').setView([0, 0], 1);
+          const mymap = L.map('map').setView([0, 0], 1);
       const attribution =
           '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors';
       
@@ -66,14 +63,14 @@
       
       // Making a marker with a custom icon
       const issIcon = L.icon({
-          iconUrl: 'https://cdn.shopify.com/s/files/1/0315/0587/5080/files/INCUS_logo_dark_140x.png?v=1643988183',
-          iconSize: [50, 32],
+          iconUrl: 'https://i.postimg.cc/wv08TgmT/Ellipse-2.png',
+          iconSize: [40, 40],
           iconAnchor: [25, 16]
       });
       const issIcon2 = L.icon({
-          iconUrl: 'https://cdn.shopify.com/s/files/1/0315/0587/5080/files/White_device_white_front_1_85f97b86-69cd-4fcd-bb79-420bce5047a6.png?v=1644771655',
-          iconSize: [50, 32],
-          iconAnchor: [25, 16]
+          iconUrl: 'https://i.postimg.cc/j58mYcpD/Ellipse-3.png',
+          iconSize: [40, 40],
+          iconAnchor: [25, 40]
       });
       const marker = L.marker([0, 0], {
           icon: issIcon
@@ -148,7 +145,7 @@
 
 
           var polyline2 = L.polyline(latlngs2, {
-              color: 'blue'
+              color: '#0BFF00'
           }).addTo(mymap);
 
      
@@ -158,16 +155,10 @@
       
       }
       
-      
-      
       getData();
       
       
       </script>
-
-
-
-
 
 <script>
 
