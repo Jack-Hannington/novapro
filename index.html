@@ -27,14 +27,14 @@
                 <td><input type="color" value="#FF2D00" style="margin-right:10px;">Device 1 </td>
                 <td><span id="lat"></span>°</td>
                 <td><span id="lon"></span>°</td>
-                <td>...</td>
+                <td><span id="speed"></span></td>
                 <td>...</td>
             </tr>
             <tr>
                 <td><input type="color" value="#0BFF00" style="margin-right:10px;">Device 2</td>
                 <td><span id="lat2"></span>°</td>
                 <td><span id="lon2"></span>°</td>
-                <td>...</td>
+                <td><span id="speed2"></span></td>
                 <td>...</td>
               </tr>
         </tbody>
@@ -93,8 +93,6 @@
 
    
       let deviceIds = [];
-
- 
       
       async function getData() {
           const response = await fetch(api_url);
@@ -106,38 +104,41 @@
          
           //get first device
            let firstDeviceId = deviceIds[0][0];
-            console.log(firstDeviceId)
+            console.log(`this is the first device is ${firstDeviceId}`)
           //get last known data
           let firstDeviceLastMessage= firstDeviceId[ Object.keys(firstDeviceId).pop()];
         
           //get the lat
           let latitude = firstDeviceLastMessage.lat;
           let longitude = firstDeviceLastMessage.lon;
-          console.log(latitude, longitude);
+          let speed = firstDeviceLastMessage.speed;
+          console.log(latitude, longitude, speed);
 
                    
           //get second device
           let secondDeviceId =  data.data.locations['ebbc58db232349ae'];
           //get last known data
-          let secondDeviceLastMessage= secondDeviceId[ Object.keys(secondDeviceId).pop()];
+          let secondDeviceLastMessage = secondDeviceId[ Object.keys(secondDeviceId).pop()];
           //get the lat
           let latitude2 = secondDeviceLastMessage.lat;
           let longitude2 = secondDeviceLastMessage.lon;
-          console.log(latitude2, longitude2);
+          let speed2 = secondDeviceLastMessage.speed;
+          console.log(latitude2, longitude2, speed2);
 
-        
-
-          marker.setLatLng([latitude, longitude]);
+        //  Update the DOM 
           document.getElementById('lat').textContent = latitude.toFixed(5);
           document.getElementById('lon').textContent = longitude.toFixed(5);
+          document.getElementById('speed').textContent = speed;
           document.getElementById('lat2').textContent = latitude2.toFixed(5);
           document.getElementById('lon2').textContent = longitude2.toFixed(5);
-
-
+          document.getElementById('speed2').textContent = speed2;
+        
+          // Set the markers 
+          marker.setLatLng([latitude, longitude]);
           marker2.setLatLng([latitude2, longitude2]);
     
       
-         //   Incoming data array push to latlngs
+         //   Incoming data array push to latlngs for both devices
           incomingCoords = [];
           incomingCoords.push(latitude, longitude);
           latlngs.push(incomingCoords);
@@ -147,7 +148,7 @@
           latlngs2.push(incomingCoords2);
           
       
-          // create a red polyline from an array of LatLng points
+          // create a polyline from an array of LatLng points
           var polyline = L.polyline(latlngs, {
               color: 'red'
           }).addTo(mymap);
@@ -156,17 +157,10 @@
           var polyline2 = L.polyline(latlngs2, {
               color: '#0BFF00'
           }).addTo(mymap);
-
-     
-
           // zoom the map to the polyline
          mymap.fitBounds(polyline2.getBounds());
-      
       }
-      
       getData();
-      
-      
       </script>
 
 <script>
