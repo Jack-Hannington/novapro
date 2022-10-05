@@ -49,14 +49,14 @@
         </thead>
         <tbody>
             <tr>
-                <td><div style="background-color:#FF2D00;width:20px;height:20px;display:inline-block;margin-bottom:-3px;border-radius: 50%;"></div> <span style="margin-left:10px;">Device 1 </span></td>
+                <td><div class="colour-indicators"></div> <span style="margin-left:10px;">Device 1 </span></td>
                 <td><span id="lat"></span>°</td>
                 <td><span id="lon"></span>°</td>
                 <td><span id="speed"></span></td>
                 <td>...</td>
             </tr>
             <tr>
-                <td><input type="color" value="#0BFF00" style="margin-right:10px;">Device 2</td>
+                <td><div class="colour-indicators" style="background-color:#0BFF00;"></div><span style="margin-left:10px;">Device 2</span></td>
                 <td><span id="lat2"></span>°</td>
                 <td><span id="lon2"></span>°</td>
                 <td><span id="speed2"></span></td>
@@ -87,12 +87,12 @@
       var latlngs2 = [];
       
       // Making a marker with a custom icon
-      const issIcon = L.icon({
+      const raceIcon = L.icon({
           iconUrl: 'https://i.postimg.cc/jdTh14Jt/Liam-red-marker.png',
           iconSize: [40, 40],
           iconAnchor: [25, 16]
       });
-      const issIcon2 = L.icon({
+      const raceIcon2 = L.icon({
           iconUrl: 'https://i.postimg.cc/0yXSfYsk/Green-marker.png',
           iconSize: [40, 40],
           iconAnchor: [25, 40]
@@ -103,11 +103,11 @@
           iconAnchor: [25, 40]
       });
       const marker = L.marker([0, 0], {
-          icon: issIcon
+          icon: raceIcon
       }).addTo(mymap).bindPopup('INCUS athlete one')
 
       const marker2 = L.marker([0, 0], {
-          icon: issIcon2
+          icon: raceIcon2
       }).addTo(mymap).bindPopup('INCUS athlete two')
 
       const finishLine = L.marker([52.933313,-1.157532], {
@@ -181,47 +181,13 @@
 
 
           var polyline2 = L.polyline(latlngs2, {
-              color: 'green'
+              color: '#0BFF00'
           }).addTo(mymap);
           // zoom the map to the polyline
          mymap.fitBounds(polyline.getBounds());
       }
-      setInterval(getData, 200);
+      setInterval(getData, 100);
       </script>
 
-<script>
-
-
-    // const api_url = 'https://www.incustrials.co.uk/getData.php'; 
-        
-    // async function fetchData() {
-    //     let response = await fetch(api_url);
-    //     let data = await response.json();
-    //     console.log(data.data.locations)
-    
-    
-    //     let firstDeviceId =  data.data.locations['af0325abb078f46'];
-    //     let latestPosition = firstDeviceId[ Object.keys(firstDeviceId).pop()];
-    //     console.log(latestPosition)
-    
-    
-    //     let table = document.getElementById('myTable');
-    
-    
-    //     // Append new table row for every device ID received.
-    //     for (device in data.data.locations ){
-    //         if (device != "mockServer"){
-    //           console.log(device);
-    //           let p = document.createElement('tr')
-    //           p.textContent = device;
-    //           table.append(p);
-    //         }
-    //     }
-    // }
-     
-    //    setInterval(fetchData,1000);
-    
-    </script>
-    
 </body>
 </html>
