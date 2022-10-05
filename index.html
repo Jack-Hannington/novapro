@@ -103,8 +103,8 @@
           console.log(deviceIds);
          
           //get first device
-           let firstDeviceId = deviceIds[0][0];
-            console.log(`this is the first device is ${firstDeviceId}`)
+           let firstDeviceId = data.data.locations['4e96e0c798c7908b'];
+            // console.log(`this is the first device is ${firstDeviceId}`)
           //get last known data
           let firstDeviceLastMessage= firstDeviceId[ Object.keys(firstDeviceId).pop()];
         
@@ -116,26 +116,26 @@
 
                    
           //get second device
-          let secondDeviceId =  data.data.locations['ebbc58db232349ae'];
+        //   let secondDeviceId =  data.data.locations['ebbc58db232349ae'];
           //get last known data
-          let secondDeviceLastMessage = secondDeviceId[ Object.keys(secondDeviceId).pop()];
+        //   let secondDeviceLastMessage = secondDeviceId[ Object.keys(secondDeviceId).pop()];
           //get the lat
-          let latitude2 = secondDeviceLastMessage.lat;
-          let longitude2 = secondDeviceLastMessage.lon;
-          let speed2 = secondDeviceLastMessage.speed;
-          console.log(latitude2, longitude2, speed2);
+        //   let latitude2 = secondDeviceLastMessage.lat;
+        //   let longitude2 = secondDeviceLastMessage.lon;
+        //   let speed2 = secondDeviceLastMessage.speed;
+        //   console.log(latitude2, longitude2, speed2);
 
         //  Update the DOM 
           document.getElementById('lat').textContent = latitude.toFixed(5);
           document.getElementById('lon').textContent = longitude.toFixed(5);
           document.getElementById('speed').textContent = speed;
-          document.getElementById('lat2').textContent = latitude2.toFixed(5);
-          document.getElementById('lon2').textContent = longitude2.toFixed(5);
-          document.getElementById('speed2').textContent = speed2;
+        //   document.getElementById('lat2').textContent = latitude2.toFixed(5);
+        //   document.getElementById('lon2').textContent = longitude2.toFixed(5);
+        //   document.getElementById('speed2').textContent = speed2;
         
           // Set the markers 
           marker.setLatLng([latitude, longitude]);
-          marker2.setLatLng([latitude2, longitude2]);
+        //   marker2.setLatLng([latitude2, longitude2]);
     
       
          //   Incoming data array push to latlngs for both devices
@@ -144,8 +144,8 @@
           latlngs.push(incomingCoords);
 
           incomingCoords2 = [];
-          incomingCoords2.push(latitude2, longitude2);
-          latlngs2.push(incomingCoords2);
+        //   incomingCoords2.push(latitude2, longitude2);
+        //   latlngs2.push(incomingCoords2);
           
       
           // create a polyline from an array of LatLng points
@@ -154,9 +154,9 @@
           }).addTo(mymap);
 
 
-          var polyline2 = L.polyline(latlngs2, {
-              color: '#0BFF00'
-          }).addTo(mymap);
+        //   var polyline2 = L.polyline(latlngs2, {
+        //       color: '#0BFF00'
+        //   }).addTo(mymap);
           // zoom the map to the polyline
          mymap.fitBounds(polyline.getBounds());
       }
