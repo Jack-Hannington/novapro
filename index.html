@@ -63,12 +63,17 @@
       
       // Making a marker with a custom icon
       const issIcon = L.icon({
-          iconUrl: 'https://i.postimg.cc/wv08TgmT/Ellipse-2.png',
+          iconUrl: 'https://i.postimg.cc/jdTh14Jt/Liam-red-marker.png',
           iconSize: [40, 40],
           iconAnchor: [25, 16]
       });
       const issIcon2 = L.icon({
-          iconUrl: 'https://i.postimg.cc/j58mYcpD/Ellipse-3.png',
+          iconUrl: 'https://i.postimg.cc/0yXSfYsk/Green-marker.png',
+          iconSize: [40, 40],
+          iconAnchor: [25, 40]
+      });
+      const finishMarker = L.icon({
+          iconUrl: 'https://i.postimg.cc/QxFY3FK4/bxs-flag-checkered-1.png',
           iconSize: [40, 40],
           iconAnchor: [25, 40]
       });
@@ -79,6 +84,10 @@
       const marker2 = L.marker([0, 0], {
           icon: issIcon2
       }).addTo(mymap).bindPopup('INCUS athlete two')
+
+      const finishLine = L.marker([52.933313,-1.157532], {
+          icon: finishMarker
+      }).addTo(mymap).bindPopup('Finish line');
       
       const api_url = 'https://www.incustrials.co.uk/getData.php';
 
