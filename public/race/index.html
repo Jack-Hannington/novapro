@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NOVA Pro</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.8.0/dist/leaflet.css"
+        integrity="sha512-hoalWLoI8r4UszCkZ5kL8vayOGVae1oxXe/2A4AO6J9+580uKHDO3JdHb7NzwwzK5xr/Fs0W40kiNHxM9vyTtQ=="
+        crossorigin="" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;700&family=Montserrat:wght@300;400;500;600;700;900&display=swap"
+        rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Epilogue:wght@300;500;700&family=Inter:wght@400;900&family=Karla:wght@600;700;800&family=Montserrat:wght@300;400;500;700;900&display=swap');
+    </style>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
+        crossorigin="anonymous"></script>
+    <link href="/styles.css" type="text/css" rel="stylesheet">
+    <!-- Make sure you put this AFTER Leaflet's CSS -->
+    <script src="https://unpkg.com/leaflet@1.8.0/dist/leaflet.js"
+        integrity="sha512-BB3hKbKWOc9Ez/TAwyWxNXeoV9c1v6FIeYiBieIWkpLjauysF18NzgR1MBNBXf8/KABdlkX68nAhlwcDFLGPCQ=="
+        crossorigin=""></script>
+
+    <script src="https://code.iconify.design/3/3.0.0/iconify.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;700&family=Montserrat:wght@300;400;500;600;700;900&display=swap"
+        rel="stylesheet">
+        <script src="https://unpkg.com/leaflet-routing-machine@latest/dist/leaflet-routing-machine.js"></script>
+
+</head>
+
+<body>
+    <main class="container">
+        <section class="race-information">
+            <div class="row">
+                <div class="col-md-6 col-9 d-flex align-items-center">
+                    <h1>Rosie Weston vs. Team INCUS</h1>
+                </div>
+                <div class="col-md-1 col-3 d-flex align-items-center">
+                    <p>LIVE</p><span class="live-indicator"></span>
+                </div>
+                <div class="col-md-2 col-6 d-flex align-items-center justify-content-between">
+                    <div class="time-block align-items-center d-flex flex-column justify-content-center">
+                        <h6>STARTED</h6>
+                        <p>00:00:00</p>
+                    </div>
+                    <div class="time-block align-items-center d-flex flex-column">
+                        <h6>DURATION</h6>
+                        <p>00:00:00</p>
+                    </div>
+                </div>
+                <div class="col-md-3 col-6 d-flex align-items-center justify-content-evenly">
+                    <div class="race-icon"><img src="https://i.postimg.cc/jdTh14Jt/Liam-red-marker.png"></div>
+                    <div class="race-icon"><img src="https://i.postimg.cc/0yXSfYsk/Green-marker.png"></div>
+                
+                </div>
+            </div>
+        </section>
+        <div id="map"></div>
+        <section class="race-info">
+            <div class="leaderboard-container">
+
+                <table class="race-leaderboard">
+                    <thead>
+                        <tr>
+                            <th>User</th>
+                            <th>Lat</th>
+                            <th>Long</th>
+                            <th>Pace
+                                <select>
+                                    <option>Swim</option>
+                                    <option>Bike</option>
+                                    <option>Run</option>
+                                </select>
+                            </th>
+                            <th>Heart rate</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>
+                                <div class="colour-indicators"></div> <span>Device 1</span>
+                            </td>
+                            <td><span id="lat"></span>°</td>
+                            <td><span id="lon"></span>°</td>
+                            <td><span id="speed"></span></td>
+                            <td><span id="hr"></span>bpm</td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <span>Device 2</span>
+                            </td>
+                            <td><span id="lat2"></span>°</td>
+                            <td><span id="lon2"></span>°</td>
+                            <td><span id="speed2"></span></td>
+                            <td><span id="hr2">0</span>bpm</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+    </main>
+
+
+
+    <script>
+        // Making a map and tiles
+        const mymap = L.map('map').setView([0, 0], 1);
+        const attribution =
+            '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors';
+
+        const tileUrl = 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
+        const tiles = L.tileLayer(tileUrl, {
+            attribution
+        });
+        tiles.addTo(mymap);
+
+        var latlngs = [];
+        var latlngs2 = [];
+        let savedLocations = [];
+
+        // Making a marker with a custom icon
+        const raceIcon = L.icon({
+            iconUrl: 'https://i.postimg.cc/jdTh14Jt/Liam-red-marker.png',
+            iconSize: [40, 40],
+            iconAnchor: [25, 16]
+        });
+        const raceIcon2 = L.icon({
+            iconUrl: 'https://i.postimg.cc/0yXSfYsk/Green-marker.png',
+            iconSize: [40, 40],
+            iconAnchor: [25, 40]
+        });
+        const finishMarker = L.icon({
+            iconUrl: 'https://i.postimg.cc/QxFY3FK4/bxs-flag-checkered-1.png',
+            iconSize: [40, 40],
+            iconAnchor: [25, 40]
+        });
+        const marker = L.marker([0, 0], {
+            icon: raceIcon
+        }).addTo(mymap).bindPopup('INCUS athlete one')
+
+        const marker2 = L.marker([0, 0], {
+            icon: raceIcon2
+        }).addTo(mymap).bindPopup('INCUS athlete two')
+
+        const finishLine = L.marker([52.933313, -1.157532], {
+            icon: finishMarker
+        }).addTo(mymap).bindPopup('Finish line');
+
+        const api_url = 'https://www.incustrials.co.uk/getData.php';
+
+
+        let deviceIds = [];
+
+        async function getData() {
+            const response = await fetch(api_url);
+            const data = await response.json();
+
+            //Get all device ids and store into an array
+            deviceIds = [Object.keys(data.data.locations)];
+            console.log(deviceIds);
+
+            //get first device
+            //    let firstDeviceId = data.data.locations['4e96e0c798c7908b'];
+            let firstDeviceId = data.data.locations['ebbc58db232349ae'];
+            // console.log(`this is the first device is ${firstDeviceId}`)
+            //get last known data
+            let firstDeviceLastMessage = firstDeviceId[Object.keys(firstDeviceId).pop()];
+
+            //get the lat
+            let latitude = firstDeviceLastMessage.lat;
+            let longitude = firstDeviceLastMessage.lon;
+            let speed = firstDeviceLastMessage.speed;
+            console.log(latitude, longitude, speed);
+
+            //Get the heart rate for device one
+            let firstDeviceHeartRate = data.data.hearts['190989f2a92853'];
+            let firstDeviceLastRecievedHeartRate = firstDeviceHeartRate[Object.keys(firstDeviceHeartRate).pop()];
+            console.log(`this is the heart of the first device ${firstDeviceLastRecievedHeartRate.rte}`);
+
+
+            //get second device
+            let secondDeviceId = data.data.locations['190989f2a92853'];
+            //get last known data
+            let secondDeviceLastMessage = secondDeviceId[Object.keys(secondDeviceId).pop()];
+            //get the lat
+            let latitude2 = secondDeviceLastMessage.lat;
+            let longitude2 = secondDeviceLastMessage.lon;
+            let speed2 = secondDeviceLastMessage.speed;
+            console.log(latitude2, longitude2, speed2);
+
+            //  Update the DOM 
+
+            //User one dom
+            document.getElementById('lat').textContent = latitude.toFixed(5);
+            document.getElementById('lon').textContent = longitude.toFixed(5);
+            document.getElementById('hr').textContent = firstDeviceLastRecievedHeartRate.rte;
+            document.getElementById('speed').textContent = speed;
+
+            // User two dom //
+            document.getElementById('lat2').textContent = latitude2.toFixed(5);
+            document.getElementById('lon2').textContent = longitude2.toFixed(5);
+            document.getElementById('speed2').textContent = speed2;
+
+            // Set the markers 
+            marker.setLatLng([latitude, longitude]);
+            marker2.setLatLng([latitude2, longitude2]);
+
+
+            //   Incoming data array push to latlngs for both devices
+            incomingCoords = [];
+            incomingCoords.push(latitude, longitude);
+            latlngs.push(incomingCoords);
+
+            incomingCoords2 = [];
+            incomingCoords2.push(latitude2, longitude2);
+            latlngs2.push(incomingCoords2);
+
+            //Create historic polyline based on all incoming lat - long data
+
+            // Creates new object for each unique ID and pushes to locations array. 
+            // for each message received from specific ID. Push the lat and long data to the saved locations arra
+
+
+            for (let i = 0; i < firstDeviceId.length; i++){
+                console.log('This is a loop of all the message from the device:')
+                console.log(firstDeviceId[i].lat)
+                console.log(firstDeviceId[i].lon)
+                console.log('this is the last message received')
+                let lastMessage = firstDeviceId.slice(-1);
+                console.log(lastMessage[0].lat);
+                // have to create a new array to push so lat long go into their readable array for Polylines
+                savedCoords = [];
+                savedCoords.push(firstDeviceId[i].lat, firstDeviceId[i].lon)
+                savedLocations.push(savedCoords);
+            };
+
+            console.log(savedLocations);
+            console.log(latlngs);
+
+
+            let savedPolyline = L.polyline(savedLocations, {
+                color: 'red'
+            }).addTo(mymap);
+
+
+            // Routing controls
+
+            // L.Routing.control({
+            //  waypoints: [
+            //     L.latLng(52.76187, 1.25042),
+            //     L.latLng(52.76190, -1.25030)
+            //     ],
+            //     router: L.Routing.mapbox('pk.eyJ1IjoiaGFubmluZ3Rvbi1kaWdpdGFsIiwiYSI6ImNsOWlseWg3ZDFudDQzd2w5cG53MXkwMnoifQ.foUec-0zEHJ6KviNPUJekQ')
+            //     }).addTo(map);
+
+
+            // create a polyline from an array of LatLng points
+            var polyline = L.polyline(latlngs, {
+                color: 'red'
+            }).addTo(mymap);
+
+
+            var polyline2 = L.polyline(latlngs2, {
+                color: '#0BFF00'
+            }).addTo(mymap);
+            // zoom the map to the polyline
+            mymap.fitBounds(polyline.getBounds());
+        }
+        // setInterval(getData, 3000);
+
+        getData();
+    </script>
+
+</body>
+
+</html>

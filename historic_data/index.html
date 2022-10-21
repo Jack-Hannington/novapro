@@ -1,0 +1,180 @@
+<sergey-import src="header" />
+<body>
+
+    <main class="container">
+
+        <section class="race-information">
+            <div class="row">
+            <div class="col-md-4 col-8">
+                <h1>Race name</h1>
+            </div> 
+            <div class="col-md-2 col-4">
+                <span class="live-indicator">Live indicator</span>
+            </div>
+            <div class="col-md-6 col-6 d-flex flex-row-reverse">
+                <div class="race-icon">Race Icon</div>
+            </div>
+        </div>
+        </section>
+
+
+    <table class="race-leaderboard">
+        <thead>
+            <tr>
+                <th><span class="iconify" data-icon="carbon:user-avatar"></span> User </th>
+                <th>Lat</th>
+                <th>Long</th>
+                <th>Pace 
+                    <select>
+                        <option>Swim</option>
+                        <option>Bike</option>
+                        <option>Run</option>
+                    </select>
+                </th>
+                <th>Heart rate</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><div class="colour-indicators"></div> <span style="margin-left:10px;">Device 1 </span></td>
+                <td><span id="lat"></span>°</td>
+                <td><span id="lon"></span>°</td>
+                <td><span id="speed"></span></td>
+                <td>...</td>
+            </tr>
+            <tr>
+                <td><div class="colour-indicators" style="background-color:#0BFF00;"></div><span style="margin-left:10px;">Device 2</span></td>
+                <td><span id="lat2"></span>°</td>
+                <td><span id="lon2"></span>°</td>
+                <td><span id="speed2"></span></td>
+                <td>...</td>
+              </tr>
+        </tbody>
+      </table>
+
+    <div id="map"></div>
+
+    </main>
+
+    
+
+    <script >
+          // Making a map and tiles
+          const mymap = L.map('map').setView([0, 0], 1);
+      const attribution =
+          '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors';
+      
+      const tileUrl = 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
+      const tiles = L.tileLayer(tileUrl, {
+          attribution
+      });
+      tiles.addTo(mymap);
+      
+      var latlngs = [];
+      var latlngs2 = [];
+      
+      // Making a marker with a custom icon
+      const raceIcon = L.icon({
+          iconUrl: 'https://i.postimg.cc/jdTh14Jt/Liam-red-marker.png',
+          iconSize: [40, 40],
+          iconAnchor: [25, 16]
+      });
+      const raceIcon2 = L.icon({
+          iconUrl: 'https://i.postimg.cc/0yXSfYsk/Green-marker.png',
+          iconSize: [40, 40],
+          iconAnchor: [25, 40]
+      });
+      const finishMarker = L.icon({
+          iconUrl: 'https://i.postimg.cc/QxFY3FK4/bxs-flag-checkered-1.png',
+          iconSize: [40, 40],
+          iconAnchor: [25, 40]
+      });
+      const marker = L.marker([0, 0], {
+          icon: raceIcon
+      }).addTo(mymap).bindPopup('INCUS athlete one')
+
+      const marker2 = L.marker([0, 0], {
+          icon: raceIcon2
+      }).addTo(mymap).bindPopup('INCUS athlete two')
+
+      const finishLine = L.marker([52.933313,-1.157532], {
+          icon: finishMarker
+      }).addTo(mymap).bindPopup('Finish line');
+      
+      const api_url = 'https://www.incustrials.co.uk/getData.php';
+
+   
+      let deviceIds = [];
+      
+      async function getData() {
+          const response = await fetch(api_url);
+          const data = await response.json();
+
+          //Get all device ids and store into an array
+          deviceIds = [Object.keys(data.data.locations)];
+          console.log(deviceIds);
+         
+          //get first device
+        //    let firstDeviceId = data.data.locations['4e96e0c798c7908b'];
+           let firstDeviceId = data.data.locations['ebbc58db232349ae'];
+            // console.log(`this is the first device is ${firstDeviceId}`)
+          //get last known data
+          let firstDeviceLastMessage= firstDeviceId[ Object.keys(firstDeviceId).pop()];
+        
+          //get the lat
+          let latitude = firstDeviceLastMessage.lat;
+          let longitude = firstDeviceLastMessage.lon;
+          let speed = firstDeviceLastMessage.speed;
+          console.log(latitude, longitude, speed);
+
+                   
+          //get second device
+          let secondDeviceId =  data.data.locations['190989f2a92853'];
+          //get last known data
+          let secondDeviceLastMessage = secondDeviceId[ Object.keys(secondDeviceId).pop()];
+          //get the lat
+          let latitude2 = secondDeviceLastMessage.lat;
+          let longitude2 = secondDeviceLastMessage.lon;
+          let speed2 = secondDeviceLastMessage.speed;
+          console.log(latitude2, longitude2, speed2);
+
+        //  Update the DOM 
+          document.getElementById('lat').textContent = latitude.toFixed(5);
+          document.getElementById('lon').textContent = longitude.toFixed(5);
+          document.getElementById('speed').textContent = speed;
+          document.getElementById('lat2').textContent = latitude2.toFixed(5);
+          document.getElementById('lon2').textContent = longitude2.toFixed(5);
+          document.getElementById('speed2').textContent = speed2;
+        
+          // Set the markers 
+          marker.setLatLng([latitude, longitude]);
+          marker2.setLatLng([latitude2, longitude2]);
+    
+      
+         //   Incoming data array push to latlngs for both devices
+          incomingCoords = [];
+          incomingCoords.push(latitude, longitude);
+          latlngs.push(incomingCoords);
+
+          incomingCoords2 = [];
+          incomingCoords2.push(latitude2, longitude2);
+          latlngs2.push(incomingCoords2);
+          
+      
+          // create a polyline from an array of LatLng points
+          var polyline = L.polyline(latlngs, {
+              color: 'red'
+          }).addTo(mymap);
+
+
+          var polyline2 = L.polyline(latlngs2, {
+              color: '#0BFF00'
+          }).addTo(mymap);
+          // zoom the map to the polyline
+         mymap.fitBounds(polyline.getBounds());
+      }
+      setInterval(getData, 100);
+      </script>
+
+</body>
+</html>

@@ -163,14 +163,14 @@
                     // console.log(key+": ", element.slice(-1)[0].lon, element.slice(-1)[0].lat  )
 
 
-                    console.log(key + ": ", element[0].lon, element[0].lat)
+                    console.log(key + ": ", element[0].lat, element[0].long)
 
 
                     const [lastItem] = element.slice(-1);
                     //    let uniqueItems = [...new Set(element)]
                     //    console.log(uniqueItems);
-                    console.log("Last item:")
-                    console.log(lastItem.lat, lastItem.lon);
+                    // console.log("Last item:")
+                    // console.log(lastItem.lat, lastItem.lon);
 
 
 
@@ -264,7 +264,7 @@
             //   Incoming data array push to latlngs for both devices
             incomingCoords = [];
             incomingCoords.push(latitude, longitude);
-            console.log("incoming:")
+            // console.log("incoming:")
             console.log(incomingCoords);
             console.log("latlngs:")
             latlngs.push(incomingCoords);
@@ -276,11 +276,12 @@
                 marker = new L.marker([locations[i].lat, locations[i].lon])
                     .bindPopup(locations[i][0])
                     .addTo(mymap);
-                var polyline = L.polyline(latlngs, {
+                var polyline = L.polyline(locations, {
                     color: colours[i]
                 }).addTo(mymap);
             }
 
+    
             // incomingCoords2 = [];
             // incomingCoords2.push(latitude2, longitude2);
             // latlngs2.push(incomingCoords2);
