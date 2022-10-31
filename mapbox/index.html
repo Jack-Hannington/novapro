@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>Add a default marker to a web map</title>
+    <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no">
+    <link href="https://api.mapbox.com/mapbox-gl-js/v2.10.0/mapbox-gl.css" rel="stylesheet">
+    <script src="https://api.mapbox.com/mapbox-gl-js/v2.10.0/mapbox-gl.js"></script>
+    <style>
+        body {
+            margin: 20px;
+            padding: 0;
+        }
+
+        #map {
+            position: relative;
+            height: 500px;
+            width: 100%;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="map"></div>
+
+    <script>
+
+        // Get the data endpoint
+        const api_url = 'https://www.incustrials.co.uk/getData.php';
+
+        // Get data function 
+
+        let savedLocations = [];
+
+        async function getData() {
+            const response = await fetch(api_url);
+            const devices = await response.json();
+
+            // List all the device IDS
+            deviceIds = [Object.keys(devices.data.locations)];
+            console.log(deviceIds);
+
+            //Assign first ID
+            let deviceOne = devices.data.locations['ebbc58db232349ae'];
+            let lat = deviceOne.slice(-1)[0].lat;
+            let lon = deviceOne.slice(-1)[0].lon;
+
+
+            console.log(devices);
+
+            //device object with last messsage that maps to markers and lines
+
+
+
+
+
+            mapboxgl.accessToken = 'pk.eyJ1IjoiaGFubmluZ3Rvbi1kaWdpdGFsIiwiYSI6ImNsOWlseWg3ZDFudDQzd2w5cG53MXkwMnoifQ.foUec-0zEHJ6KviNPUJekQ';
+            const map = new mapboxgl.Map({
+                container: 'map',
+                // Choose from Mapbox's core styles, or make your own style with Mapbox Studio
+                style: 'mapbox://styles/mapbox/streets-v11',
+                center: [-1.2501420974731, 52.761657714844],
+                zoom: 13
+            });
+
+
+            const deviceOneMarker = new mapboxgl.Marker()
+                .setLngLat([lon, lat])
+                .addTo(map);
+
+
+
+
+            // Create a default Marker, colored black, rotated 45 degrees.
+            const marker2 = new mapboxgl.Marker({ color: 'black', rotation: 45 })
+                .setLngLat([12.65147, 55.608166])
+                .addTo(map);
+
+
+            //:Loop through all coords and populate line 
+
+
+
+            for (let i = 0; i < deviceOne.length; i++) {
+                console.log('This is a loop of all the message from the device:')
+                console.log('this is the last message received')
+                let lastMessage = deviceOne.slice(-1);
+                console.log(lastMessage[0].lat);
+                // have to create a new array to push so lat long go into their readable array for Polylines
+                savedCoords = [];
+                savedCoords.push(deviceOne[i].lon, deviceOne[i].lat)
+                savedLocations.push(savedCoords);
+                console.log(savedCoords);
+                console.log(savedLocations);
+            };
+
+
+
+
+
+            map.on('load', () => {
+                map.addSource('route', {
+                    'type': 'geojson',
+                    'data': {
+                        'type': 'Feature',
+                        'properties': {},
+                        'geometry': {
+                            'type': 'LineString',
+                            'coordinates': [
+                                savedLocations
+                            ]
+                        }
+                    }
+                });
+                map.addLayer({
+                    'id': 'route',
+                    'type': 'line',
+                    'source': 'route',
+                    'layout': {
+                        'line-join': 'round',
+                        'line-cap': 'round'
+                    },
+                    'paint': {
+                        'line-color': '#888',
+                        'line-width': 8
+                    }
+                });
+                console.log('finished loading')
+            });
+
+
+
+
+
+        }
+
+        getData()
+    </script>
+
+</body>
+
+</html>

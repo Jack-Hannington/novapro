@@ -76,10 +76,10 @@
                             <th>Lat</th>
                             <th>Long</th>
                             <th>Pace
-                                <select>
-                                    <option>Swim</option>
-                                    <option>Bike</option>
+                                <select id="pace-calc">
                                     <option>Run</option>
+                                    <option>Bike</option>
+                                    <option>Swim</option>
                                 </select>
                             </th>
                             <th>Heart rate</th>
@@ -114,6 +114,31 @@
 
 
     <script>
+
+        // pace calcs
+
+        const paceCal = document.querySelector('#pace-calc');
+        const speedCell = document.querySelector('#speed');
+        
+        function paceCalculations(){
+            if(paceCal.value == "Run"){
+                speedCell.textContent = (100 / speed) + " sec/hm" ;
+            } else if (paceCal.value == "Bike"){
+                speedCell.textContent = (speed * 3.6) + " kph" ;
+            } else {
+                speedCell.textContent = (16.67 / speed); 
+            }
+        }
+        
+       setTimeout(
+            paceCalculations
+       , 3000)
+        
+        paceCal.addEventListener('change', () =>{
+            paceCalculations();
+        })
+
+
         // Making a map and tiles
         const mymap = L.map('map').setView([0, 0], 1);
         const attribution =
@@ -128,6 +153,7 @@
         var latlngs = [];
         var latlngs2 = [];
         let savedLocations = [];
+        let speed;
 
         // Making a marker with a custom icon
         const raceIcon = L.icon({
@@ -160,6 +186,8 @@
         const api_url = 'https://www.incustrials.co.uk/getData.php';
 
 
+        
+
         let deviceIds = [];
 
         async function getData() {
@@ -180,7 +208,8 @@
             //get the lat
             let latitude = firstDeviceLastMessage.lat;
             let longitude = firstDeviceLastMessage.lon;
-            let speed = firstDeviceLastMessage.speed;
+            speed = firstDeviceLastMessage.speed;
+
             console.log(latitude, longitude, speed);
 
             //Get the heart rate for device one
@@ -205,7 +234,7 @@
             document.getElementById('lat').textContent = latitude.toFixed(5);
             document.getElementById('lon').textContent = longitude.toFixed(5);
             document.getElementById('hr').textContent = firstDeviceLastRecievedHeartRate.rte;
-            document.getElementById('speed').textContent = speed;
+            // document.getElementById('speed').textContent = speed;
 
             // User two dom //
             document.getElementById('lat2').textContent = latitude2.toFixed(5);

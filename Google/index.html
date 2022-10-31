@@ -1,0 +1,389 @@
+<html>
+
+<head>
+    <title>Simple Polylines</title>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=default"></script>
+
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Epilogue:wght@300;500;700&family=Inter:wght@400;900&family=Karla:wght@600;700;800&family=Montserrat:wght@300;400;500;700;900&display=swap');
+    </style>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
+        crossorigin="anonymous"></script>
+    <style>
+        /* 
+ * Always set the map height explicitly to define the size of the div element
+ * that contains the map. 
+ */
+        #map {
+            height: 550px;
+            width: 700px;
+            border:5px solid white;
+        }
+
+        /* 
+ * Optional: Makes the sample page fill the window. 
+ */
+        html,
+        body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }
+    </style>
+    <link href="/styles.css" type="text/css" rel="stylesheet">
+</head>
+
+<body>
+    <main class="container">
+        <!-- <div class="row race-information">
+            <div class="col-md-6 col-9 d-flex align-items-center">
+                <h1>NOVA Pro</h1>
+            </div>
+            <div class="col-md-1 col-3 d-flex align-items-center">
+                <p>LIVE</p><span class="live-indicator"></span>
+            </div>
+            <div class="col-md-2 col-6 d-flex align-items-center justify-content-between">
+                <div class="time-block align-items-center d-flex flex-column justify-content-center">
+                    <h6>STARTED</h6>
+                    <p>00:00:00</p>
+                </div>
+                <div class="time-block align-items-center d-flex flex-column">
+                    <h6>DURATION</h6>
+                    <p>00:00:00</p>
+                </div>
+            </div>
+            <div class="col-md-3 col-6 d-flex align-items-center justify-content-evenly">
+                <div class="race-icon"><img src="https://i.postimg.cc/tgwJmnKV/red-direction-icon.png"></div>
+                <div class="race-icon"><img src="https://i.postimg.cc/YShj3zsH/green-direction-icon.png"></div>
+            </div>
+        </div> -->
+        <div id="map"></div>
+
+        <section class="race-info">
+            <div class="leaderboard-container">
+
+                <table class="race-leaderboard">
+                    <thead>
+                        <tr>
+                            <th>Device ID</th>
+                            <th>Lat</th>
+                            <th>Long</th>
+                            <th>Pace
+                                <select id="pace-calc">
+                                    <option>Run</option>
+                                    <option>Bike</option>
+                                    <option>Swim</option>
+                                </select>
+                            </th>
+                            <th>Alt</th>
+                            <th>Heart rate</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>
+                                <span id="device1Id">Device 1</span>
+                            </td>
+                            <td><span id="device1Lat"></span>°</td>
+                            <td><span id="device1Lon"></span>°</td>
+                            <td><span id="device1Speed"></span></td>
+                            <td><span id="device1Alt"></span></td>
+                            <td><span id="device1Heart"></span></td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <span id="device2Id">Device 1</span>
+                            </td>
+                            <td><span id="device2Lat"></span>°</td>
+                            <td><span id="device2Lon"></span>°</td>
+                            <td><span id="device2Speed"></span></td>
+                            <td><span id="device2Alt"></span></td>
+                            <td><span id="device2Heart"></span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </main>
+
+    <script>
+
+                   
+
+           
+
+        // Speed calc
+        const paceCal = document.querySelector('#pace-calc');
+        const speedCell = document.querySelector('#device1Speed');
+
+
+
+
+        // Setup - device ids
+        let map;
+        let devices;
+        let deviceIds = [];
+        let novaOne, novaTwo, novaThree, novaFour;
+        let novaOneCoords = [];
+        let novaTwoCoords = [];
+        let novaThreeCoords = [];
+        let novaFourCoords = [];
+        let locationsArray = [];
+        let novaOneSpeed;
+
+        function initMap() {
+            map = new google.maps.Map(document.getElementById("map"), {
+                zoom: 14,
+                center: {
+                    lat: 25.2374,
+                    lng: 55.2722
+                },
+            });
+        }
+
+       
+
+        // Setup API and filter incoming data
+        // const api_url = 'https://www.incustrials.co.uk/getData.php';
+        const api_url = "https://live.incusperformance.io/PHP_Receiver/getData.php"
+
+        async function getData() {
+            const response = await fetch(api_url);
+            devices = await response.json();
+
+
+            // List all the device IDS
+
+            deviceIds = [Object.keys(devices.data.locations)];
+            console.log(deviceIds);
+            allDeviceLocations = Object.entries(devices.data.locations);
+
+            // Destructure incoming entries into their own variables
+            [novaOne, novaTwo, novaThree, novaFour] = Object.entries(devices.data.locations);
+            console.log(novaOne, novaTwo, novaThree, novaFour);
+
+
+            // let icons = ["https://i.postimg.cc/T3k87Yqg/red-marker.png", "https://i.postimg.cc/43nDrkBM/green-marker-1.png", 
+            // "https://i.postimg.cc/xjH2fQnV/blue-marker.png", "https://i.postimg.cc/3J7P3Dt2/orange-marker.png"]
+            // Loop through all devices and create a marker for the last known location. This is useful but we need more control over marker appearance and line colour for each visitor. A pre-race screen
+            // to setup the event seems like the best option.
+            for (let i = 0; i < allDeviceLocations.length; i++) {
+                // new google.maps.Marker({
+                //     position: { lat: allDeviceLocations[i][1].slice(-1)[0].lat, lng: allDeviceLocations[i][1].slice(-1)[0].lon },
+                //     map,
+                //     title: "Hello World!",
+                //     icon: icons[i],
+                //     scaledSize: new google.maps.Size(50, 50), // scaled size
+                // });
+
+                let newRow = document.createElement('tr');
+                let newCell = document.createElement('td');
+                // newDiv.style.height = "20px";
+                
+                newCell.textContent = allDeviceLocations[i][1][0].id;
+                document.querySelector('.race-leaderboard').appendChild(newRow);
+                document.querySelector('.race-leaderboard').appendChild(newCell);
+
+            }
+
+
+
+
+
+            //extra lat, lng to create Google maps latng literal to draw polyline on map
+
+            for (let i = 0; i < novaOne[1].length; i++) {
+                novaOneCoords.push(new google.maps.LatLng(novaOne[1][i].lat, novaOne[1][i].lon));
+            }
+
+            //extra lat, lng to create Google maps latng literal to draw polyline on map
+            for (let i = 0; i < novaTwo[1].length; i++) {
+                novaTwoCoords.push(new google.maps.LatLng(novaTwo[1][i].lat, novaTwo[1][i].lon));
+            }
+
+            for (let i = 0; i < novaThree[1].length; i++) {
+                novaThreeCoords.push(new google.maps.LatLng(novaThree[1][i].lat, novaThree[1][i].lon));
+            }
+            for (let i = 0; i < novaFour[1].length; i++) {
+                novaFourCoords.push(new google.maps.LatLng(novaFour[1][i].lat, novaFour[1][i].lon));
+            }
+
+            // Populat table 
+
+            novaOneSpeed = novaOne[1].slice(-1)[0].speed;
+
+
+          
+
+            // console.log(novaOneCoords, novaTwoCoords);
+
+            //Get the last known location to plot the first marker
+
+            const markerSize = new google.maps.Size(50,50);
+
+            // firstDeviceId.slice(-1);
+            const icon = {
+                url: "https://i.postimg.cc/tgwJmnKV/red-direction-icon.png", // url
+                scaledSize: markerSize, // scaled size
+            };
+            const icon2 = {
+                url: "https://i.postimg.cc/YShj3zsH/green-direction-icon.png", // url
+                scaledSize: markerSize, // scaled size
+            };
+            const icon3 = {
+                url: "https://i.postimg.cc/Twb18YxN/orange-direction-icon.png", // url
+                scaledSize: markerSize, // scaled size
+            };
+            const icon4 = {
+                url: "https://i.postimg.cc/vZPcfNXh/blue-direction-icon.png", // url
+                scaledSize: markerSize, // scaled size
+            };
+
+            const marker1 = new google.maps.Marker({
+                position: { lat: novaOne[1].slice(-1)[0].lat, lng: novaOne[1].slice(-1)[0].lon },
+                map,
+                icon: icon
+            });
+           const marker2 = new google.maps.Marker({
+                position: { lat: novaTwo[1].slice(-1)[0].lat, lng: novaTwo[1].slice(-1)[0].lon },
+                map,
+                icon: icon2
+            });
+
+            const marker3 = new google.maps.Marker({
+                position: { lat: novaThree[1].slice(-1)[0].lat, lng: novaThree[1].slice(-1)[0].lon },
+                map,
+                icon: icon3
+            });
+           
+            const marker4 = new google.maps.Marker({
+                position: { lat: novaFour[1].slice(-1)[0].lat, lng: novaFour[1].slice(-1)[0].lon },
+                map,
+                icon: icon4
+            });
+
+            // Could loop through these but need the colours to be consistent for every user. 
+
+            const novaOnePolyline = new google.maps.Polyline({
+                path: novaOneCoords,
+                geodesic: true,
+                strokeColor: "red",
+                strokeOpacity: 1.0,
+                strokeWeight: 2,
+            });
+            const novaTwoPolyline = new google.maps.Polyline({
+                path: novaTwoCoords,
+                geodesic: true,
+                strokeColor: "green",
+                strokeOpacity: 1.0,
+                strokeWeight: 4,
+            });
+            const novaThreePolyline = new google.maps.Polyline({
+                path: novaThreeCoords,
+                geodesic: true,
+                strokeColor: "orange",
+                strokeOpacity: 1.0,
+                strokeWeight: 4,
+            });
+
+            const novaFourPolyline = new google.maps.Polyline({
+                path: novaFourCoords,
+                geodesic: true,
+                strokeColor: "blue",
+                strokeOpacity: 1.0,
+                strokeWeight: 4,
+            });
+
+            novaOnePolyline.setMap(map);
+            novaTwoPolyline.setMap(map);
+            novaThreePolyline.setMap(map);
+            novaFourPolyline.setMap(map);
+
+
+            const contentString =
+   "Device ID: <br/>" + novaOne[0];
+
+    const infowindow = new google.maps.InfoWindow({
+    content: contentString,
+    ariaLabel: "Marker one",
+  });
+
+
+  marker1.addListener("click", () => {
+    infowindow.open({
+      anchor: marker1,
+      map,
+    });
+  });
+
+  //Need to make this dynamic
+  
+  
+  document.getElementById("device1Id").textContent = novaOne[0];
+  document.getElementById("device1Lat").textContent = novaOne[1][0].lat;
+  document.getElementById("device1Lon").textContent = novaOne[1][0].lon;
+  document.getElementById("device1Speed").textContent = novaOne[1][0].speed;
+  document.getElementById("device1Alt").textContent = novaOne[1][0].alt;
+
+  document.getElementById("device2Id").textContent = novaTwo[1].slice(-1)[0].id;
+  document.getElementById("device2Lat").textContent = novaTwo[1].slice(-1)[0].lat;
+  document.getElementById("device2Lon").textContent = novaTwo[1].slice(-1)[0].lon;
+  document.getElementById("device2Speed").textContent = novaTwo[1].slice(-1)[0].speed;
+  document.getElementById("device2Alt").textContent = novaTwo[1].slice(-1)[0].alt;
+
+
+
+
+  document.getElementById("device2Id").textContent = novaTwo[0];
+  
+
+        }
+
+        getData();
+
+        function paceCalculations() {
+            if (paceCal.value == "Run") {
+                speedCell.textContent = (100 / novaOneSpeed) + " sec/hm";
+            } else if (paceCal.value == "Bike") {
+                speedCell.textContent = (novaOneSpeed * 3.6) + " kph";
+            } else {
+                speedCell.textContent = (16.67 / novaOneSpeed);
+            }
+        }
+
+
+   
+
+        
+
+        // Need to run a for each function to loop through all speed data in the table
+
+        setTimeout(
+            paceCalculations
+            , 3000)
+
+        paceCal.addEventListener('change', () => {
+            paceCalculations();
+        })
+
+
+
+
+
+
+        // setInterval(getData, 2000);
+
+
+    </script>
+
+
+    <script
+        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDYguUvfgVHvZlngAp2EE0wnEOyNWud-7c&callback=initMap&v=weekly"
+        defer></script>
+
+</body>
+
+</html>

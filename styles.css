@@ -95,13 +95,14 @@ table {
   .race-leaderboard {
     background-color: #172330;
     color:white;
-  
+    border:4px solid white;
   }
   
   .race-leaderboard > thead > tr> th {
-    color:#FE9511;
+    color:white;
     text-transform: uppercase;
-    font-size: 14px;
+    font-size: 16px;
+    font-weight: 400;
   }
   
   .race-leaderboard > tbody > tr:nth-of-type(odd){
